@@ -25,7 +25,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
 
     /**
      * Configuration values
-     * @var array
+     * @var array<string|int, mixed>
      */
     private $config;
 
@@ -43,15 +43,15 @@ class Configuration implements ArrayAccess, Iterator, Countable
 
     /**
      * Whether the cached size is invalid (outdated)
-     * @var boolean
+     * @var bool
      */
     private $size_invalid;
 
     /**
      * Constructor.
      *
-     * @param array $bootstrap Bootstrap config values, aka config values used before
-     *                         the class has been instantiated.
+     * @param array<string|int, mixed>|false $bootstrap Bootstrap config values, aka config values used before
+     *                                                  the class has been instantiated.
      */
     public function __construct($bootstrap = FALSE)
     {
@@ -144,9 +144,9 @@ class Configuration implements ArrayAccess, Iterator, Countable
     /**
      * Convert an input array recursively into a Configuration class hierarchy.
      *
-     * @param array $array Input array
+     * @param array<string|int, mixed> $array Input array
      *
-     * @return mixed $array A scalar value or an array
+     * @return self|array<string|int, mixed> $array A class or an array
      */
     private function convert_array_to_class($array)
     {
@@ -206,7 +206,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
      *
      * @param mixed $offset An offset to check for
      *
-     * @return boolean $return TRUE on success, FALSE on failure
+     * @return bool $return TRUE on success, FALSE on failure
      */
     public function offsetExists($offset)
     {
@@ -247,7 +247,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
     /**
      * Convert class content to an array.
      *
-     * @return array $data Array of all config values
+     * @return array<string|int, mixed> $data Array of all config values
      */
     public function toArray()
     {
@@ -318,7 +318,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
      *
      * (Inherited from Iterator)
      *
-     * @return boolean $return TRUE on success, FALSE on failure
+     * @return bool $return TRUE on success, FALSE on failure
      */
     public function valid()
     {

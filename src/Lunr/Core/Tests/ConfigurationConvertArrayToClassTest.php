@@ -11,10 +11,12 @@
 
 namespace Lunr\Core\Tests;
 
+use Lunr\Core\Configuration;
+
 /**
- * Test for the method convert_array_to_class().
+ * Test for the method convertArrayToClass().
  *
- * @covers     Lunr\Core\Configuration
+ * @covers Lunr\Core\Configuration
  */
 class ConfigurationConvertArrayToClassTest extends ConfigurationTestCase
 {
@@ -28,22 +30,22 @@ class ConfigurationConvertArrayToClassTest extends ConfigurationTestCase
     }
 
     /**
-     * Test convert_array_to_class() with an empty array as input.
+     * Test convertArrayToClass() with an empty array as input.
      *
-     * @covers Lunr\Core\Configuration::convert_array_to_class
+     * @covers Lunr\Core\Configuration::convertArrayToClass
      */
     public function testConvertArrayToClassWithEmptyArrayValue(): void
     {
-        $method = $this->getReflectionMethod('convert_array_to_class');
+        $method = $this->getReflectionMethod('convertArrayToClass');
         $output = $method->invokeArgs($this->class, [ [] ]);
 
         $this->assertArrayEmpty($output);
     }
 
     /**
-     * Test convert_array_to_class() with an array as input.
+     * Test convertArrayToClass() with an array as input.
      *
-     * @covers Lunr\Core\Configuration::convert_array_to_class
+     * @covers Lunr\Core\Configuration::convertArrayToClass
      */
     public function testConvertArrayToClassWithArrayValue(): void
     {
@@ -51,17 +53,17 @@ class ConfigurationConvertArrayToClassTest extends ConfigurationTestCase
         $input['test']  = 'String';
         $input['test1'] = 1;
 
-        $method = $this->getReflectionMethod('convert_array_to_class');
+        $method = $this->getReflectionMethod('convertArrayToClass');
         $output = $method->invokeArgs($this->class, [ $input ]);
 
         $this->assertEquals($input, $output);
     }
 
     /**
-     * Test convert_array_to_class() with a multi-dimensional array as input.
+     * Test convertArrayToClass() with a multi-dimensional array as input.
      *
      * @depends testConvertArrayToClassWithArrayValue
-     * @covers  Lunr\Core\Configuration::convert_array_to_class
+     * @covers  Lunr\Core\Configuration::convertArrayToClass
      */
     public function testConvertArrayToClassWithMultidimensionalArrayValue(): void
     {
@@ -71,12 +73,12 @@ class ConfigurationConvertArrayToClassTest extends ConfigurationTestCase
         $config['test2']['test3'] = 1;
         $config['test2']['test4'] = FALSE;
 
-        $method = $this->getReflectionMethod('convert_array_to_class');
+        $method = $this->getReflectionMethod('convertArrayToClass');
         $output = $method->invokeArgs($this->class, [ $config ]);
 
         $this->assertTrue(is_array($output));
 
-        $this->assertInstanceOf('Lunr\Core\Configuration', $output['test2']);
+        $this->assertInstanceOf(Configuration::class, $output['test2']);
 
         $property = $this->getReflectionProperty('isRootConfig');
         $this->assertFalse($property->getValue($output['test2']));

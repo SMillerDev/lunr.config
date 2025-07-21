@@ -77,7 +77,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
 
         if (!empty($bootstrap))
         {
-            $bootstrap = $this->convert_array_to_class($bootstrap);
+            $bootstrap = $this->convertArrayToClass($bootstrap);
         }
 
         $this->config = $bootstrap;
@@ -134,12 +134,27 @@ class Configuration implements ArrayAccess, Iterator, Countable
     /**
      * Load a config file.
      *
+     * @deprecated Use loadFile() instead
+     *
      * @param string $identifier Identifier string for the config file to load.
      *                           e.g.: For conf.lunr.inc.php the identifier would be 'lunr'
      *
      * @return void
      */
     public function load_file(string $identifier): void
+    {
+        $this->loadFile($identifier);
+    }
+
+    /**
+     * Load a config file.
+     *
+     * @param string $identifier Identifier string for the config file to load.
+     *                           e.g.: For conf.lunr.inc.php the identifier would be 'lunr'
+     *
+     * @return void
+     */
+    public function loadFile(string $identifier): void
     {
         $config = $this->config;
 
@@ -159,7 +174,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
 
         if (!empty($config))
         {
-            $config = $this->convert_array_to_class($config);
+            $config = $this->convertArrayToClass($config);
         }
 
         $this->config      = $config;
@@ -209,7 +224,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
      *
      * @return array<int|string,mixed> An array with sub-arrays converted
      */
-    private function convert_array_to_class(array $array): array
+    private function convertArrayToClass(array $array): array
     {
         if (empty($array))
         {
@@ -244,7 +259,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
     {
         if (is_array($value))
         {
-            $value = $this->convert_array_to_class($value);
+            $value = $this->convertArrayToClass($value);
         }
 
         if (is_null($offset))

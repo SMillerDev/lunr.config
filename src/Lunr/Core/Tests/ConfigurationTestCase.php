@@ -77,7 +77,7 @@ abstract class ConfigurationTestCase extends LunrBaseTestCase
      *
      * @return array Test $config array
      */
-    protected function construct_test_array(): array
+    protected function constructTestArray(): array
     {
         $config                   = [];
         $config['test1']          = 'String';

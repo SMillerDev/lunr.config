@@ -23,7 +23,7 @@ class ConfigurationArrayUsageTest extends ConfigurationTestCase
      */
     public function setUp(): void
     {
-        $this->setUpArray($this->construct_test_array());
+        $this->setUpArray($this->constructTestArray());
     }
 
     /**

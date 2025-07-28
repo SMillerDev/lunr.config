@@ -7,6 +7,7 @@
  *
  * SPDX-FileCopyrightText: Copyright 2011 M2mobi B.V., Amsterdam, The Netherlands
  * SPDX-FileCopyrightText: Copyright 2022 Move Agency Group B.V., Zwolle, The Netherlands
+ * SPDX-FileCopyrightText: Copyright 2025 Framna Netherlands B.V., Zwolle, The Netherlands
  * SPDX-License-Identifier: MIT
  */
 
@@ -214,7 +215,63 @@ class Configuration implements ArrayAccess, Iterator, Countable
             return;
         }
 
-        $this->load_file($identifier);
+        $this->loadFile($identifier);
+    }
+
+    /**
+     * Load environment variables as configuration.
+     *
+     * @param string|null $prefix The environment prefix to use
+     *
+     * @return void
+     */
+    public function loadEnvironment(?string $prefix = NULL): void
+    {
+        if ($this->isRootConfig === FALSE)
+        {
+            return;
+        }
+
+        $envConfig = [];
+        $prefix    = $prefix !== NULL ? strtolower($prefix) : $prefix;
+        foreach ($_ENV as $key => $value)
+        {
+            $key = strtolower($key);
+            if ($prefix !== NULL && str_starts_with($key, $prefix . '_') === FALSE)
+            {
+                continue;
+            }
+
+            $tmpConfig  = [];
+            $components = array_reverse(explode('_', $key));
+            foreach ($components as $i => $identifier)
+            {
+                if ($prefix !== NULL && $identifier === $prefix)
+                {
+                    unset($components[$i]);
+                    continue;
+                }
+
+                if ($i === 0)
+                {
+                    $tmpConfig[$identifier] = $value;
+                    continue;
+                }
+
+                $tmpConfig = [ $identifier => $tmpConfig ];
+            }
+
+            $envConfig = array_replace_recursive($envConfig, $tmpConfig);
+        }
+
+        $config = array_replace_recursive($this->toArray(), $envConfig);
+        if ($config !== [])
+        {
+            $config = $this->convertArrayToClass($config);
+        }
+
+        $this->config      = $config;
+        $this->sizeInvalid = TRUE;
     }
 
     /**

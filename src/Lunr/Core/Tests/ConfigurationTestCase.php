@@ -50,13 +50,14 @@ abstract class ConfigurationTestCase extends LunrBaseTestCase
      * Setup a Configuration class initialized with an existing $config array.
      *
      * @param array $config Existing configuration values
+     * @param bool  $root   The configuration to set up is root config
      *
      * @return void
      */
-    protected function setUpArray(array $config): void
+    protected function setUpArray(array $config, bool $root = TRUE): void
     {
         $this->config = $config;
-        $this->class  = new Configuration($config);
+        $this->class  = new Configuration(bootstrap: $config, isRootConfig: $root);
 
         parent::baseSetUp($this->class);
     }

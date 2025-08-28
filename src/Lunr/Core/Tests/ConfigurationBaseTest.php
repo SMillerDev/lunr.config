@@ -36,6 +36,14 @@ class ConfigurationBaseTest extends ConfigurationTestCase
     }
 
     /**
+     * Test that the internal environment override storage is initially empty.
+     */
+    public function testEnvironmentOverrideIsEmpty(): void
+    {
+        $this->assertPropertyEmpty('environmentOverride');
+    }
+
+    /**
      * Test that the internal position pointer is initially zero.
      */
     public function testPositionIsZero(): void

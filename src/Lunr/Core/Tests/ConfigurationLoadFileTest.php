@@ -90,6 +90,81 @@ class ConfigurationLoadFileTest extends ConfigurationTestCase
     }
 
     /**
+     * Test loading a correct config file.
+     *
+     * @depends Lunr\Core\Tests\ConfigurationArrayConstructorTest::testToArrayEqualsInput
+     * @covers  Lunr\Core\Configuration::loadFile
+     */
+    public function testLoadFileWithEnvironmentOverrides(): void
+    {
+        $override['autoload']['two'] = 'Overridden string';
+
+        $this->setReflectionPropertyValue('environmentOverride', $override);
+
+        $this->class->loadFile('autoload');
+
+        $config                    = [];
+        $config['test1']           = 'String';
+        $config['test2']           = [];
+        $config['test2']['test3']  = 1;
+        $config['test2']['test4']  = FALSE;
+        $config['autoload']['one'] = 'Value';
+        $config['autoload']['two'] = 'Overridden string';
+
+        $this->assertEquals($config, $this->class->toArray());
+    }
+
+    /**
+     * Test loading a correct config file.
+     *
+     * @depends Lunr\Core\Tests\ConfigurationArrayConstructorTest::testToArrayEqualsInput
+     * @covers  Lunr\Core\Configuration::loadFile
+     */
+    public function testLoadFileWithEnvironmentOverrideForSingleValue(): void
+    {
+        $override['singlevalue'] = 'Overridden value';
+
+        $this->setReflectionPropertyValue('environmentOverride', $override);
+
+        $this->class->loadFile('singlevalue');
+
+        $config                   = [];
+        $config['test1']          = 'String';
+        $config['test2']          = [];
+        $config['test2']['test3'] = 1;
+        $config['test2']['test4'] = FALSE;
+        $config['singlevalue']    = 'Overridden value';
+
+        $this->assertEquals($config, $this->class->toArray());
+    }
+
+    /**
+     * Test loading a correct config file.
+     *
+     * @runInSeparateProcess
+     *
+     * @depends Lunr\Core\Tests\ConfigurationArrayConstructorTest::testToArrayEqualsInput
+     * @covers  Lunr\Core\Configuration::loadFile
+     */
+    public function testLoadFileWithEnvironmentOverridesInDifferentStructure(): void
+    {
+        $override['autoload'] = 'Overridden string';
+
+        $this->setReflectionPropertyValue('environmentOverride', $override);
+
+        $this->class->loadFile('autoload');
+
+        $config                   = [];
+        $config['test1']          = 'String';
+        $config['test2']          = [];
+        $config['test2']['test3'] = 1;
+        $config['test2']['test4'] = FALSE;
+        $config['autoload']       = 'Overridden string';
+
+        $this->assertEquals($config, $this->class->toArray());
+    }
+
+    /**
      * Test loading an invalid config file.
      *
      * @covers Lunr\Core\Configuration::loadFile

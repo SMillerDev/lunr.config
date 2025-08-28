@@ -41,7 +41,10 @@ class ConfigurationLoadEnvironmentTest extends ConfigurationTestCase
         $_ENV['LOAD_ONE'] = 'Value';
         $_ENV['LOAD_TWO'] = 'String';
 
+        $this->class['test2']->loadEnvironment();
+
         $this->assertEquals($this->config, $this->class->toArray());
+        $this->assertArrayEmpty($this->getReflectionPropertyValue('environmentOverride'));
     }
 
     /**
@@ -58,12 +61,13 @@ class ConfigurationLoadEnvironmentTest extends ConfigurationTestCase
 
         $this->class->loadEnvironment();
 
-        $this->config['test'] = 'Test1';
+        $override['test'] = 'Test1';
 
-        $this->config['load']['one'] = 'Value';
-        $this->config['load']['two'] = 'String';
+        $override['load']['one'] = 'Value';
+        $override['load']['two'] = 'String';
 
         $this->assertEquals($this->config, $this->class->toArray());
+        $this->assertPropertyEquals('environmentOverride', $override);
     }
 
     /**
@@ -81,36 +85,13 @@ class ConfigurationLoadEnvironmentTest extends ConfigurationTestCase
 
         $this->class->loadEnvironment('Lunr');
 
-        $this->config['load']['one'] = 'Value';
-        $this->config['load']['two'] = 'String';
+        $override['load']['one'] = 'Value';
+        $override['load']['two'] = 'String';
 
-        $this->config['load']['three']['two'] = 'String';
+        $override['load']['three']['two'] = 'String';
 
         $this->assertEquals($this->config, $this->class->toArray());
-    }
-
-    /**
-     * Test loading the environment variables overwrite only what's needed
-     */
-    #[BackupGlobals(TRUE)]
-    public function testLoadEnvironmentOverwritesValues(): void
-    {
-        $_ENV = [];
-
-        $_ENV['TEST1']       = 'Overwrite Value';
-        $_ENV['TEST2_TEST3'] = 'Overwrite Array';
-
-        $this->class->loadEnvironment();
-
-        $config = [];
-
-        $config['test1'] = 'Overwrite Value';
-        $config['test2'] = [];
-
-        $config['test2']['test3'] = 'Overwrite Array';
-        $config['test2']['test4'] = FALSE;
-
-        $this->assertEquals($config, $this->class->toArray());
+        $this->assertPropertyEquals('environmentOverride', $override);
     }
 
 }

@@ -34,6 +34,12 @@ class Configuration implements ArrayAccess, Iterator, Countable
     private array $config;
 
     /**
+     * Configuration values overridden from the environment
+     * @var array<int|string,mixed>
+     */
+    private array $environmentOverride;
+
+    /**
      * Position of the array pointer
      * @var int
      */
@@ -82,6 +88,8 @@ class Configuration implements ArrayAccess, Iterator, Countable
             $bootstrap = $this->convertArrayToClassArray($bootstrap);
         }
 
+        $this->environmentOverride = [];
+
         $this->config = $bootstrap;
         $this->rewind();
         $this->sizeInvalid  = TRUE;
@@ -96,6 +104,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
     public function __destruct()
     {
         unset($this->config);
+        unset($this->environmentOverride);
         unset($this->position);
         unset($this->size);
         unset($this->sizeInvalid);
@@ -149,6 +158,44 @@ class Configuration implements ArrayAccess, Iterator, Countable
     }
 
     /**
+     * Apply overrides loaded from the environment.
+     *
+     * @param string $identifier Identifier string for the loaded config file.
+     *                           e.g.: For conf.lunr.inc.php the identifier would be 'lunr'
+     *
+     * @return void
+     */
+    protected function applyEnvironmentOverrides(string $identifier): void
+    {
+        if (!isset($this->environmentOverride[$identifier]))
+        {
+            return;
+        }
+
+        $config = $this->config;
+
+        if (is_array($this->environmentOverride[$identifier])
+            && array_key_exists($identifier, $this->config)
+            && $this->config[$identifier] instanceof self
+        )
+        {
+            $config[$identifier] = array_replace_recursive($this->config[$identifier]->toArray(), $this->environmentOverride[$identifier]);
+        }
+        else
+        {
+            $config[$identifier] = $this->environmentOverride[$identifier];
+        }
+
+        if (is_array($config[$identifier]) && $config[$identifier] !== [])
+        {
+            $config[$identifier] = $this->convertArrayToClass($config[$identifier]);
+        }
+
+        $this->config      = $config;
+        $this->sizeInvalid = TRUE;
+    }
+
+    /**
      * Load a config file.
      *
      * @param string $identifier Identifier string for the config file to load.
@@ -164,6 +211,8 @@ class Configuration implements ArrayAccess, Iterator, Countable
         include_once 'conf.' . $identifier . '.inc.php';
 
         $this->loaded[] = $identifier;
+
+        $this->applyEnvironmentOverrides($identifier);
     }
 
     /**
@@ -193,6 +242,8 @@ class Configuration implements ArrayAccess, Iterator, Countable
 
         if (!stream_resolve_include_path('conf.' . $identifier . '.inc.php'))
         {
+            $this->applyEnvironmentOverrides($identifier);
+
             $this->loaded[] = $identifier;
             return;
         }
@@ -246,14 +297,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
             $envConfig = array_replace_recursive($envConfig, $tmpConfig);
         }
 
-        $config = array_replace_recursive($this->toArray(), $envConfig);
-        if ($config !== [])
-        {
-            $config = $this->convertArrayToClassArray($config);
-        }
-
-        $this->config      = $config;
-        $this->sizeInvalid = TRUE;
+        $this->environmentOverride = $envConfig;
     }
 
     /**

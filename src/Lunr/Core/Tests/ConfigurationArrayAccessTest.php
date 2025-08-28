@@ -130,6 +130,26 @@ class ConfigurationArrayAccessTest extends ConfigurationTestCase
     }
 
     /**
+     * Test offsetExists() does not autoload for already loaded value.
+     *
+     * @runInSeparateProcess
+     */
+    public function testOffsetExistsAutoloadsFromEnvironment(): void
+    {
+        $override['missing']['two'] = 'Overridden string';
+
+        $this->setReflectionPropertyValue('environmentOverride', $override);
+
+        $loaded = $this->get_reflection_property('loaded');
+
+        $this->assertNotContains('missing', $loaded->getValue($this->class));
+
+        $this->assertTrue($this->class->offsetExists('missing'));
+
+        $this->assertContains('missing', $loaded->getValue($this->class));
+    }
+
+    /**
      * Test offsetGet() with non existing values.
      *
      * @param mixed $offset Offset
@@ -226,6 +246,35 @@ class ConfigurationArrayAccessTest extends ConfigurationTestCase
         $this->assertInstanceOf(Configuration::class, $this->class->offsetGet('autoload'));
 
         $this->assertContains('autoload', $loaded->getValue($this->class));
+    }
+
+    /**
+     * Test offsetGet() does not autoload for already loaded value.
+     *
+     * @runInSeparateProcess
+     */
+    public function testOffsetGetAutoloadsFromEnvironment(): void
+    {
+        $override['missing']['two'] = 'Overridden string';
+
+        $this->setReflectionPropertyValue('environmentOverride', $override);
+
+        $loaded = $this->get_reflection_property('loaded');
+
+        $this->assertNotContains('missing', $loaded->getValue($this->class));
+
+        $this->assertInstanceOf(Configuration::class, $this->class->offsetGet('missing'));
+
+        $config                   = [];
+        $config['test1']          = 'String';
+        $config['test2']          = [];
+        $config['test2']['test3'] = 1;
+        $config['test2']['test4'] = FALSE;
+        $config['missing']['two'] = 'Overridden string';
+
+        $this->assertEquals($config, $this->class->toArray());
+
+        $this->assertContains('missing', $loaded->getValue($this->class));
     }
 
     /**

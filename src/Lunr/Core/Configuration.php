@@ -157,29 +157,10 @@ class Configuration implements ArrayAccess, Iterator, Countable
      */
     public function loadFile(string $identifier): void
     {
-        $config = $this->config;
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable
+        $config = $this;
 
         include_once 'conf.' . $identifier . '.inc.php';
-
-        /**
-         * Since we're including a config file here, it's conceivable that $config
-         * might not stay an array. Ignore the phpstan check for that.
-         *
-         * @phpstan-ignore function.alreadyNarrowedType
-         */
-        if (!is_array($config))
-        {
-            $config = [];
-            return;
-        }
-
-        if (!empty($config))
-        {
-            $config = $this->convertArrayToClass($config);
-        }
-
-        $this->config      = $config;
-        $this->sizeInvalid = TRUE;
 
         $this->loaded[] = $identifier;
     }
@@ -316,7 +297,14 @@ class Configuration implements ArrayAccess, Iterator, Countable
     {
         if (is_array($value))
         {
-            $value = $this->convertArrayToClass($value);
+            if ($value === [])
+            {
+                $value = new self(isRootConfig: FALSE);
+            }
+            else
+            {
+                $value = $this->convertArrayToClass($value);
+            }
         }
 
         if (is_null($offset))

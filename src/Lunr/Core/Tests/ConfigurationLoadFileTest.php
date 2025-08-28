@@ -130,6 +130,8 @@ class ConfigurationLoadFileTest extends ConfigurationTestCase
     /**
      * Test that loading a file invalidates the cached size value.
      *
+     * @runInSeparateProcess
+     *
      * @covers Lunr\Core\Configuration::loadFile
      */
     public function testLoadFileInvalidatesSize(): void
@@ -243,6 +245,8 @@ class ConfigurationLoadFileTest extends ConfigurationTestCase
 
     /**
      * Test that loading a file invalidates the cached size value.
+     *
+     * @runInSeparateProcess
      *
      * @covers Lunr\Core\Configuration::load_file
      */

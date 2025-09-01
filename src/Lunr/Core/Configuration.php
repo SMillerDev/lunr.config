@@ -78,7 +78,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
 
         if (!empty($bootstrap))
         {
-            $bootstrap = $this->convertArrayToClass($bootstrap);
+            $bootstrap = $this->convertArrayToClassArray($bootstrap);
         }
 
         $this->config = $bootstrap;
@@ -248,7 +248,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
         $config = array_replace_recursive($this->toArray(), $envConfig);
         if ($config !== [])
         {
-            $config = $this->convertArrayToClass($config);
+            $config = $this->convertArrayToClassArray($config);
         }
 
         $this->config      = $config;
@@ -262,7 +262,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
      *
      * @return array<int|string,mixed> An array with sub-arrays converted
      */
-    private function convertArrayToClass(array $array): array
+    private function convertArrayToClassArray(array $array): array
     {
         if (empty($array))
         {
@@ -283,6 +283,23 @@ class Configuration implements ArrayAccess, Iterator, Countable
     }
 
     /**
+     * Convert an input array recursively into a Configuration class hierarchy.
+     *
+     * @param array<int|string,mixed> $array Input array
+     *
+     * @return self The array value transformed to a Configuration class instance
+     */
+    private function convertArrayToClass(array $array): self
+    {
+        if (empty($array))
+        {
+            return new self(isRootConfig: FALSE);
+        }
+
+        return new self($array, isRootConfig: FALSE);
+    }
+
+    /**
      * Offset to set.
      *
      * Assigns a value to the specified offset.
@@ -297,14 +314,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
     {
         if (is_array($value))
         {
-            if ($value === [])
-            {
-                $value = new self(isRootConfig: FALSE);
-            }
-            else
-            {
-                $value = $this->convertArrayToClass($value);
-            }
+            $value = $this->convertArrayToClass($value);
         }
 
         if (is_null($offset))

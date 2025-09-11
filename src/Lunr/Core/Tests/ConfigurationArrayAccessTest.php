@@ -11,6 +11,7 @@
 namespace Lunr\Core\Tests;
 
 use Lunr\Core\Configuration;
+use RuntimeException;
 
 /**
  * This tests the ArrayAccess methods of the Configuration class.
@@ -39,6 +40,17 @@ class ConfigurationArrayAccessTest extends ConfigurationTestCase
     public function testOffsetExists(mixed $offset): void
     {
         $this->assertTrue($this->class->offsetExists($offset));
+    }
+
+    /**
+     * Test offsetExists() with an invalid value.
+     */
+    public function testOffsetExistsWithInvalidValue(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unsupported offset!');
+
+        $this->class->offsetExists(TRUE);
     }
 
     /**
@@ -142,6 +154,17 @@ class ConfigurationArrayAccessTest extends ConfigurationTestCase
     }
 
     /**
+     * Test offsetGet() with an invalid value.
+     */
+    public function testOffsetGetWithInvalidOffset(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unsupported offset!');
+
+        $this->class->offsetGet(TRUE);
+    }
+
+    /**
      * Test offsetGet() does not autoload for non root config.
      */
     public function testOffsetGetDoesNotAutoloadForNonRootConfig(): void
@@ -230,6 +253,17 @@ class ConfigurationArrayAccessTest extends ConfigurationTestCase
     }
 
     /**
+     * Test offsetUnset() with an invalid offset.
+     */
+    public function testOffsetUnsetWithInvalidOffset(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unsupported offset!');
+
+        $this->class->offsetUnset(TRUE);
+    }
+
+    /**
      * Test offsetSet() with a given offset.
      *
      * @depends Lunr\Core\Tests\ConfigurationConvertArrayToClassTest::testConvertArrayToClassWithMultidimensionalArrayValue
@@ -261,6 +295,19 @@ class ConfigurationArrayAccessTest extends ConfigurationTestCase
 
         $this->assertArrayHasKey(0, $value);
         $this->assertEquals('Value', $value[0]);
+    }
+
+    /**
+     * Test offsetSet() with an invalid offset.
+     *
+     * @depends Lunr\Core\Tests\ConfigurationConvertArrayToClassTest::testConvertArrayToClassWithMultidimensionalArrayValue
+     */
+    public function testOffsetSetWithInvalidOffset(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unsupported offset!');
+
+        $this->class->offsetSet(TRUE, 'Value');
     }
 
     /**

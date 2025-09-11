@@ -16,6 +16,7 @@ namespace Lunr\Core;
 use ArrayAccess;
 use Countable;
 use Iterator;
+use RuntimeException;
 
 /**
  * Configuration Class
@@ -321,9 +322,13 @@ class Configuration implements ArrayAccess, Iterator, Countable
         {
             $this->config[] = $value;
         }
-        else
+        elseif (is_string($offset) || is_int($offset))
         {
             $this->config[$offset] = $value;
+        }
+        else
+        {
+            throw new RuntimeException('Unsupported offset!');
         }
 
         $this->sizeInvalid = TRUE;
@@ -342,6 +347,11 @@ class Configuration implements ArrayAccess, Iterator, Countable
      */
     public function offsetExists(mixed $offset): bool
     {
+        if (!is_string($offset) && !is_int($offset))
+        {
+            throw new RuntimeException('Unsupported offset!');
+        }
+
         $this->autoloadFile($offset);
 
         return isset($this->config[$offset]);
@@ -358,6 +368,11 @@ class Configuration implements ArrayAccess, Iterator, Countable
      */
     public function offsetUnset(mixed $offset): void
     {
+        if (!is_string($offset) && !is_int($offset))
+        {
+            throw new RuntimeException('Unsupported offset!');
+        }
+
         unset($this->config[$offset]);
         $this->sizeInvalid = TRUE;
     }
@@ -375,6 +390,11 @@ class Configuration implements ArrayAccess, Iterator, Countable
      */
     public function offsetGet(mixed $offset): mixed
     {
+        if (!is_string($offset) && !is_int($offset))
+        {
+            throw new RuntimeException('Unsupported offset!');
+        }
+
         $this->autoloadFile($offset);
 
         return $this->config[$offset] ?? NULL;

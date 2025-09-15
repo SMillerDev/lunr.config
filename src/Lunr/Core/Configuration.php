@@ -398,7 +398,7 @@ class Configuration implements ArrayAccess, Iterator, Countable
 
         $this->autoloadFile($offset);
 
-        return isset($this->config[$offset]);
+        return array_key_exists($offset, $this->config);
     }
 
     /**

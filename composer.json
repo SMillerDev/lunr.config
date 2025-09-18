@@ -11,7 +11,7 @@
   "require-dev": {
     "phpunit/phpunit": ">=10.5 <11.0",
     "mockery/mockery": "~1.5",
-    "lunr/halo": "dev-master"
+    "lunr/halo": "~0.11.0"
   },
   "config": {
     "optimize-autoloader": true
